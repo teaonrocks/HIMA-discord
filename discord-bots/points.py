@@ -10,7 +10,7 @@ import json
 import asyncio
 import requests
 
-APIURL = "http://164.68.109.113/api/"
+APIURL = os.getenv("APIURL")
 load_dotenv()
 TOKEN = os.getenv("POINTS_TOKEN")
 msgjson = open("message.json", "r")
