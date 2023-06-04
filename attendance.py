@@ -12,7 +12,25 @@ TOKEN = os.getenv("ATTENDANCE_TOKEN")
 intents = discord.Intents.all()
 client = commands.Bot(command_prefix="!", intents=intents, case_insensitive=True)
 APIURL = os.getenv("APIURL")
-# APIURL = "http://localhost:8000/api/"
+LOGS_CHANNEL = os.getenv("LOGS_CHANNEL")
+LEADERBOARD_CHANNEL = os.getenv("LEADERBOARD_CHANNEL")
+RAFFLE_CHANNEL = os.getenv("RAFFLE_CHANNEL")
+SERVER_ID = os.getenv("SERVER_ID")
+SCHOLAR_ROLE = os.getenv("SCHOLAR_ROLE")
+HONOR_ROLE = os.getenv("HONOR_ROLE")
+HALLPASS_1_ROLE = os.getenv("HALLPASS_1_ROLE")
+HALLPASS_2_ROLE = os.getenv("HALLPASS_2_ROLE")
+HALLPASS_3_ROLE = os.getenv("HALLPASS_3_ROLE")
+HALLPASS_4_ROLE = os.getenv("HALLPASS_4_ROLE")
+HALLPASS_5_ROLE = os.getenv("HALLPASS_5_ROLE")
+HALLPASS_6_ROLE = os.getenv("HALLPASS_6_ROLE")
+HALLPASS_7_ROLE = os.getenv("HALLPASS_7_ROLE")
+HALLPASS_8_ROLE = os.getenv("HALLPASS_8_ROLE")
+HALLPASS_9_ROLE = os.getenv("HALLPASS_9_ROLE")
+HALLPASS_10_ROLE = os.getenv("HALLPASS_10_ROLE")
+STUDENT_ROLE = os.getenv("STUDENT_ROLE")
+ATTENDANCE_CHANNEL = os.getenv("ATTENDANCE_CHANNEL")
+
 
 
 @client.event
@@ -25,7 +43,7 @@ async def on_ready():
 
 async def leaderboard():
     print("updating leaderboard")
-    logs = client.get_channel(993366573718962256)
+    logs = client.get_channel(LOGS_CHANNEL)
     log = discord.Embed(title="Updating leaderboard")
     timenow = datetime.utcnow().strftime("%Y/%m/%d %H:%M:%S")
     log.add_field(name="time", value=f"{timenow}", inline=False)
@@ -33,7 +51,7 @@ async def leaderboard():
     leaderboard = requests.get(f"{APIURL}attendance_leaderboard").json()
     leaderboard_users = leaderboard["userid"]
     leaderboard_streaks = leaderboard["streaks"]
-    channel = client.get_channel(980698781605560360)
+    channel = client.get_channel(LEADERBOARD_CHANNEL)
     embed = discord.Embed(title="🏆 Leaderboard 🏆")
     if len(leaderboard_users) < 10:
         for x in range(len(leaderboard_users)):
@@ -91,20 +109,20 @@ async def leaderboard():
 
 
 async def daily_raffle():
-    logs = client.get_channel(993366573718962256)
+    logs = client.get_channel(LOGS_CHANNEL)
     heretoday = requests.get(f"{APIURL}present_today").json()
     raffle = heretoday["userid"]
     winnerid = random.choice(raffle)
-    guild = client.get_guild(int(943173196490879009))
-    channel = client.get_channel(986155177427992586)
-    scholars = guild.get_role(980506731736100946)
-    honor = guild.get_role(977092646763921439)
+    guild = client.get_guild(int(SERVER_ID))
+    channel = client.get_channel(RAFFLE_CHANNEL)
+    scholars = guild.get_role(SCHOLAR_ROLE)
+    honor = guild.get_role(HONOR_ROLE)
     winnerobj = await guild.fetch_member(int(winnerid))
     userrole = "student"
     for role in winnerobj.roles:
-        if role.id == 977092646763921439:
+        if role.id == HONOR_ROLE:
             userrole = "honor"
-        elif role.id == 980506731736100946:
+        elif role.id == SCHOLAR_ROLE:
             userrole = "scholar"
     if userrole == "scholar":
         response = requests.put(f"{APIURL}addrep/{winnerid}/15").json()
@@ -224,12 +242,12 @@ async def daily_raffle():
 
 
 async def new_day():
-    logs = client.get_channel(993366573718962256)
+    logs = client.get_channel(LOGS_CHANNEL)
     response = requests.post(f"{APIURL}newday").json()
     print(f"New day, Week: {response['week']} Day: {response['day']}")
-    guild = client.get_guild(int(943173196490879009))
-    students = guild.get_role(943176594539827200)
-    channel = client.get_channel(980367233253519360)
+    guild = client.get_guild(int(SERVER_ID))
+    students = guild.get_role(STUDENT_ROLE)
+    channel = client.get_channel(ATTENDANCE_CHANNEL)
     embed = discord.Embed(
         title=f"⏰ Attention students ⏰", description="The school day has begun"
     )
@@ -241,18 +259,18 @@ async def new_day():
 
 
 async def daily_rep():
-    logs = client.get_channel(993366573718962256)
-    guild = client.get_guild(int(943173196490879009))
-    hp10 = guild.get_role(984905714860453928).members
-    hp9 = guild.get_role(984905707751084032).members
-    hp8 = guild.get_role(984905700692086834).members
-    hp7 = guild.get_role(984905693628874762).members
-    hp6 = guild.get_role(984905686536290304).members
-    hp5 = guild.get_role(984905679607324672).members
-    hp4 = guild.get_role(984905672699306025).members
-    hp3 = guild.get_role(984905665778688020).members
-    hp2 = guild.get_role(984905658929389628).members
-    hp1 = guild.get_role(984905652054933584).members
+    logs = client.get_channel(LOGS_CHANNEL)
+    guild = client.get_guild(int(SERVER_ID))
+    hp10 = guild.get_role(HALLPASS_10_ROLE).members
+    hp9 = guild.get_role(HALLPASS_9_ROLE).members
+    hp8 = guild.get_role(HALLPASS_8_ROLE).members
+    hp7 = guild.get_role(HALLPASS_7_ROLE).members
+    hp6 = guild.get_role(HALLPASS_6_ROLE).members
+    hp5 = guild.get_role(HALLPASS_5_ROLE).members
+    hp4 = guild.get_role(HALLPASS_4_ROLE).members
+    hp3 = guild.get_role(HALLPASS_3_ROLE).members
+    hp2 = guild.get_role(HALLPASS_2_ROLE).members
+    hp1 = guild.get_role(HALLPASS_1_ROLE).members
 
     for member in hp10:
         response = requests.put(f"{APIURL}addrep/{member.id}/10").json()
@@ -377,7 +395,7 @@ async def daily_rep():
 
 
 async def streak_rep():
-    logs = client.get_channel(993366573718962256)
+    logs = client.get_channel(LOGS_CHANNEL)
     response = requests.get(f"{APIURL}get_10_streak").json()
     members = response["members"]
     for member in members:
@@ -424,7 +442,7 @@ async def streakleaderboard(ctx):
 
 @client.command()
 async def present(ctx):
-    logs = client.get_channel(993366573718962256)
+    logs = client.get_channel(LOGS_CHANNEL)
     userid = ctx.message.author.id
     response = requests.put(f"{APIURL}present/{userid}").json()
     if response["first"]:

@@ -17,6 +17,19 @@ msgjson = open("message.json", "r")
 messages = json.loads(msgjson.read())
 intents = discord.Intents.all()
 client = commands.Bot(command_prefix="!", intents=intents, case_insensitive=True)
+GENERAL_CHANNEL_ID = os.getenv("GENERAL_CHANNEL_ID")
+HALLPASS_1_ROLE = os.getenv("HALLPASS_1_ROLE")
+HALLPASS_2_ROLE = os.getenv("HALLPASS_2_ROLE")
+HALLPASS_3_ROLE = os.getenv("HALLPASS_3_ROLE")
+HALLPASS_4_ROLE = os.getenv("HALLPASS_4_ROLE")
+HALLPASS_5_ROLE = os.getenv("HALLPASS_5_ROLE")
+HALLPASS_6_ROLE = os.getenv("HALLPASS_6_ROLE")
+HALLPASS_7_ROLE = os.getenv("HALLPASS_7_ROLE")
+HALLPASS_8_ROLE = os.getenv("HALLPASS_8_ROLE")
+HALLPASS_9_ROLE = os.getenv("HALLPASS_9_ROLE")
+HALLPASS_10_ROLE = os.getenv("HALLPASS_10_ROLE")
+SERVER_ID = os.getenv("SERVER_ID")
+LOGS_CHANNEL = os.getenv("LOGS_CHANNEL")
 
 
 @client.event
@@ -42,13 +55,10 @@ async def newhour():
 @tasks.loop(seconds=1)
 async def send_msg(minute):
     if datetime.utcnow().strftime("%M:%S") == f"{minute}:00":
-        # if datetime.utcnow().strftime("%M:%S") == f"18:00":  Testing
         selector = random.randrange(0, 10)
-        # selector = 1  Testing
-        channel = client.get_channel(943180095907057725)
-        # channel = client.get_channel(991758482724360223)  Testing channel
-        logs = client.get_channel(993366573718962256)
-        guild = client.get_guild(int(943173196490879009))
+        channel = client.get_channel(GENERAL_CHANNEL_ID)
+        logs = client.get_channel(LOGS_CHANNEL)
+        guild = client.get_guild(int(SERVER_ID))
         index = random.randrange(0, len(messages["scenario"]))
         scenario = messages["scenario"][index]
         answer = messages["answer"][index]
@@ -65,7 +75,7 @@ async def send_msg(minute):
                 msg = await client.wait_for(
                     "message",
                     check=lambda x: x.content.lower() == answer
-                    and x.channel.id == 943180095907057725,
+                    and x.channel.id == GENERAL_CHANNEL_ID,
                     timeout=60,
                 )
                 print(f"reply recieved at {msg.created_at}")
@@ -74,25 +84,25 @@ async def send_msg(minute):
                 base = 1
                 multiplier = 0
                 for role in user.roles:
-                    if role.id == 984905652054933584:
+                    if role.id == HALLPASS_1_ROLE:
                         multiplier = 0.2
-                    elif role.id == 984905658929389628:
+                    elif role.id == HALLPASS_2_ROLE:
                         multiplier = 0.4
-                    elif role.id == 984905665778688020:
+                    elif role.id == HALLPASS_3_ROLE:
                         multiplier = 0.6
-                    elif role.id == 984905672699306025:
+                    elif role.id == HALLPASS_4_ROLE:
                         multiplier = 0.8
-                    elif role.id == 984905679607324672:
+                    elif role.id == HALLPASS_5_ROLE:
                         multiplier = 1
-                    elif role.id == 984905686536290304:
+                    elif role.id == HALLPASS_6_ROLE:
                         multiplier = 1.2
-                    elif role.id == 984905693628874762:
+                    elif role.id == HALLPASS_7_ROLE:
                         multiplier = 1.4
-                    elif role.id == 984905700692086834:
+                    elif role.id == HALLPASS_8_ROLE:
                         multiplier = 1.6
-                    elif role.id == 984905707751084032:
+                    elif role.id == HALLPASS_9_ROLE:
                         multiplier = 1.8
-                    elif role.id == 984905714860453928:
+                    elif role.id == HALLPASS_10_ROLE:
                         multiplier = 2
                 response = requests.put(
                     f"{APIURL}addrep/{msg.author.id}/{base + multiplier}"
@@ -126,7 +136,6 @@ async def send_msg(minute):
             or selector == 7
             or selector == 8
         ):
-            print("test")
             embed = discord.Embed(title="🚨Alert🚨", color=0x00FF00)
             embed.add_field(name=f"{scenario}", value=f"{answer}", inline=False)
             await channel.send(embed=embed)
@@ -141,7 +150,7 @@ async def send_msg(minute):
                     check=lambda x: x.content.lower() == answer
                     and requests.get(f"{APIURL}userdata/{x.author.id}").json()["reps"]
                     < 100
-                    and x.channel.id == 943180095907057725,
+                    and x.channel.id == GENERAL_CHANNEL_ID,
                     timeout=90,
                 )
                 print(f"reply recieved at {msg.created_at}")
@@ -149,25 +158,25 @@ async def send_msg(minute):
                 base = 2
                 multiplier = 0
                 for role in user.roles:
-                    if role.id == 984905652054933584:
+                    if role.id == HALLPASS_1_ROLE:
                         multiplier = 0.2
-                    elif role.id == 984905658929389628:
+                    elif role.id == HALLPASS_2_ROLE:
                         multiplier = 0.4
-                    elif role.id == 984905665778688020:
+                    elif role.id == HALLPASS_3_ROLE:
                         multiplier = 0.6
-                    elif role.id == 984905672699306025:
+                    elif role.id == HALLPASS_4_ROLE:
                         multiplier = 0.8
-                    elif role.id == 984905679607324672:
+                    elif role.id == HALLPASS_5_ROLE:
                         multiplier = 1
-                    elif role.id == 984905686536290304:
+                    elif role.id == HALLPASS_6_ROLE:
                         multiplier = 1.2
-                    elif role.id == 984905693628874762:
+                    elif role.id == HALLPASS_7_ROLE:
                         multiplier = 1.4
-                    elif role.id == 984905700692086834:
+                    elif role.id == HALLPASS_8_ROLE:
                         multiplier = 1.6
-                    elif role.id == 984905707751084032:
+                    elif role.id == HALLPASS_9_ROLE:
                         multiplier = 1.8
-                    elif role.id == 984905714860453928:
+                    elif role.id == HALLPASS_10_ROLE:
                         multiplier = 2
                 response = requests.put(
                     f"{APIURL}addrep/{msg.author.id}/{base + multiplier}"
@@ -207,7 +216,7 @@ async def send_msg(minute):
                 msg = await client.wait_for(
                     "message",
                     check=lambda x: x.content.lower() == answer
-                    and x.channel.id == 943180095907057725,
+                    and x.channel.id == GENERAL_CHANNEL_ID,
                     timeout=60,
                 )
                 print(f"reply recieved at {msg.created_at}")
@@ -334,7 +343,7 @@ async def addrep(ctx, userid, points):
         print(
             f"updating Rep for {await client.fetch_user(userid)}, before: {response['before']} after: {response['after']} - done by {ctx.message.author}"
         )
-        logs = client.get_channel(993366573718962256)
+        logs = client.get_channel(LOGS_CHANNEL)
         log = discord.Embed(title=f"Rep added for {await client.fetch_user(userid)}")
         log.add_field(name="Done by", value=f"{ctx.message.author}", inline=False)
         log.add_field(name="Before: ", value=f"{response['before']}", inline=False)
@@ -365,7 +374,7 @@ async def minusrep(ctx, userid, points):
         print(
             f"updating Rep for {await client.fetch_user(userid)}, before: {response['before']} after: {response['after']} - done by {ctx.message.author}"
         )
-        logs = client.get_channel(993366573718962256)
+        logs = client.get_channel(LOGS_CHANNEL)
         log = discord.Embed(title=f"Rep deducted for {await client.fetch_user(userid)}")
         log.add_field(name="Done by", value=f"{ctx.message.author}", inline=False)
         log.add_field(name="Before: ", value=f"{response['before']}", inline=False)

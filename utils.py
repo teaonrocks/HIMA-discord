@@ -87,7 +87,6 @@ def get_members_10_streak():
         attendanceforweek, fullattendance, streak, registered = getattendance(member)
         if streak % 10 == 0 and streak != 0:
             members.append(member)
-    print(members)
     return {"status": "OK", "members": members}
 
 

@@ -8,13 +8,19 @@ import random
 import requests
 import os
 
-APIURL = "http://164.68.109.113/api/"
-# APIURL = "http://localhost:8000/api/"
+APIURL = os.getenv("APIURL")
 load_dotenv()
 TOKEN = os.getenv("SHOP_TOKEN")
 intents = discord.Intents.all()
 client = commands.Bot(command_prefix="!", intents=intents, case_insensitive=True)
-
+LOGS_CHANNEL = os.getenv("LOGS_CHANNEL")
+SCHOLAR_ROLE = os.getenv("SCHOLAR_ROLE")
+HONOR_ROLE = os.getenv("HONOR_ROLE")
+SERVER_ID = os.getenv("SERVER_ID")
+TICKET_ROLE = os.getenv("TICKET_ROLE")
+DEBUG_SERVER_ID = os.getenv("DEBUG_SERVER_ID")
+RAFFLE_WINNER_CHANNEL = os.getenv("RAFFLE_WINNER_CHANNEL")
+REP_SHOP_CHANNEL = os.getenv("REP_SHOP_CHANNEL")
 
 class Item:
     def __init__(self, name, price, callback):
@@ -55,7 +61,7 @@ async def ml_day_callback(interaction):
             embed.add_field(
                 name="after", value=f"{transaction['after']} Reps", inline=False
             )
-            logs = client.get_channel(993366573718962256)
+            logs = client.get_channel(LOGS_CHANNEL)
             log = discord.Embed(title="Purchase")
             log.add_field(
                 name=f"{interaction.user}",
@@ -115,7 +121,7 @@ async def ml_week_callback(interaction):
             embed.add_field(
                 name="after", value=f"{transaction['after']} Reps", inline=False
             )
-            logs = client.get_channel(993366573718962256)
+            logs = client.get_channel(LOGS_CHANNEL)
             log = discord.Embed(title="Purchase")
             log.add_field(
                 name=f"{interaction.user}",
@@ -152,9 +158,9 @@ async def honor_roll_callback(interaction):
     async def confirm_callback(interaction):
         userrole = "student"
         for role in interaction.user.roles:
-            if role.id == 977092646763921439:
+            if role.id == HONOR_ROLE:
                 userrole = "honor"
-            elif role.id == 980506731736100946:
+            elif role.id == SCHOLAR_ROLE:
                 userrole = "scholar"
         if userrole == "honor" or userrole == "scholar":
             embed = discord.Embed(title="❌ Error")
@@ -176,8 +182,8 @@ async def honor_roll_callback(interaction):
                 transaction = requests.put(
                     f"{APIURL}minusrep/{interaction.user.id}/100"
                 ).json()
-                guild = client.get_guild(int(943173196490879009))
-                honor = guild.get_role(977092646763921439)
+                guild = client.get_guild(int(SERVER_ID))
+                honor = guild.get_role(HONOR_ROLE)
                 user_obj = await guild.fetch_member(int(interaction.user.id))
                 await user_obj.add_roles(honor)
                 embed = discord.Embed(title="✅ You have been upgraded to honor role")
@@ -189,7 +195,7 @@ async def honor_roll_callback(interaction):
                 embed.add_field(
                     name="after", value=f"{transaction['after']} Reps", inline=False
                 )
-                logs = client.get_channel(993366573718962256)
+                logs = client.get_channel(LOGS_CHANNEL)
                 log = discord.Embed(title="Purchase")
                 log.add_field(
                     name=f"{interaction.user}",
@@ -226,9 +232,9 @@ async def scholar_callback(interaction):
     async def confirm_callback(interaction):
         userrole = "student"
         for role in interaction.user.roles:
-            if role.id == 977092646763921439:
+            if role.id == HONOR_ROLE:
                 userrole = "honor"
-            elif role.id == 980506731736100946:
+            elif role.id == SCHOLAR_ROLE:
                 userrole = "scholar"
         if userrole == "student":
             embed = discord.Embed(title="❌ Error")
@@ -255,9 +261,9 @@ async def scholar_callback(interaction):
                 transaction = requests.put(
                     f"{APIURL}minusrep/{interaction.user.id}/120"
                 ).json()
-                guild = client.get_guild(int(943173196490879009))
-                scholar = guild.get_role(980506731736100946)
-                honor = guild.get_role(977092646763921439)
+                guild = client.get_guild(int(SERVER_ID))
+                scholar = guild.get_role(SCHOLAR_ROLE)
+                honor = guild.get_role(HONOR_ROLE)
                 user_obj = await guild.fetch_member(int(interaction.user.id))
                 await user_obj.add_roles(scholar)
                 await user_obj.remove_roles(honor)
@@ -270,7 +276,7 @@ async def scholar_callback(interaction):
                 embed.add_field(
                     name="after", value=f"{transaction['after']} Reps", inline=False
                 )
-                logs = client.get_channel(993366573718962256)
+                logs = client.get_channel(LOGS_CHANNEL)
                 log = discord.Embed(title="Purchase")
                 log.add_field(
                     name=f"{interaction.user}", value="Purchased Scholar", inline=False
@@ -303,12 +309,12 @@ async def mint_ticket_callback(interaction):
     cancel = Button(label="❌ Cancel", style=discord.ButtonStyle.red)
 
     async def confirm_callback(interaction):
-        guild = client.get_guild(int(943173196490879009))
-        ticketrole = guild.get_role(990950779802255401)
+        guild = client.get_guild(int(SERVER_ID))
+        ticketrole = guild.get_role(TICKET_ROLE)
         user_obj = await guild.fetch_member(int(interaction.user.id))
         ticket = False
         for role in interaction.user.roles:
-            if role.id == 990950779802255401:
+            if role.id == TICKET_ROLE:
                 ticket = True
         if ticket:
             embed = discord.Embed(title="❌ Error")
@@ -340,7 +346,7 @@ async def mint_ticket_callback(interaction):
                         value=f"{transaction['after']} Reps",
                         inline=False,
                     )
-                    logs = client.get_channel(993366573718962256)
+                    logs = client.get_channel(LOGS_CHANNEL)
                     log = discord.Embed(title="Purchase")
                     log.add_field(
                         name=f"{interaction.user}",
@@ -385,8 +391,8 @@ async def raffle_callback(interaction):
     cancel = Button(label="❌ Cancel", style=discord.ButtonStyle.red)
 
     async def confirm_callback(interaction):
-        guild = client.get_guild(int(943173196490879009))
-        ticketrole = guild.get_role(991763573737009172)
+        guild = client.get_guild(int(SERVER_ID))
+        ticketrole = guild.get_role(TICKET_ROLE)
         user_obj = await guild.fetch_member(int(interaction.user.id))
         account = requests.get(f"{APIURL}userdata/{interaction.user.id}").json()
         first_time = True
@@ -399,7 +405,7 @@ async def raffle_callback(interaction):
             await interaction.response.edit_message(embed=embed, view=None)
         else:
             for role in user_obj.roles:
-                if role.id == 991763573737009172:
+                if role.id == TICKET_ROLE:
                     first_time = False
             if first_time:
                 await user_obj.add_roles(ticketrole)
@@ -413,7 +419,7 @@ async def raffle_callback(interaction):
                 embed.add_field(
                     name="after", value=f"{transaction['after']} Reps", inline=False
                 )
-                logs = client.get_channel(993366573718962256)
+                logs = client.get_channel(LOGS_CHANNEL)
                 log = discord.Embed(title="Purchase")
                 log.add_field(
                     name=f"{interaction.user}",
@@ -469,7 +475,7 @@ async def on_ready():
 
 
 @client.slash_command(
-    guild_ids=[943173196490879009, 943841709106819092],
+    guild_ids=[SERVER_ID, DEBUG_SERVER_ID],
     description="🛒 Rep shop",
 )
 async def shop(ctx):
@@ -491,7 +497,7 @@ async def shop(ctx):
 
 
 @client.slash_command(
-    guild_ids=[943173196490879009, 943841709106819092],
+    guild_ids=[SERVER_ID, DEBUG_SERVER_ID],
     description="Set up raffle in shop",
 )
 @default_permissions(manage_messages=True)
@@ -514,7 +520,7 @@ async def raffle(
         time = now + timedelta(hours=duration)
         raffle_timer.start(time.strftime("%Y/%m/%d %H:%M:%S"), prize)
         print(time.strftime("%Y/%m/%d %H:%M:%S"))
-        channel = client.get_channel(991779150723547227)
+        channel = client.get_channel(REP_SHOP_CHANNEL)
         announcement = discord.Embed(
             title="Raffle tickets are available in the Rep Shop!"
         )
@@ -522,7 +528,7 @@ async def raffle(
         announcement.add_field(name="Prize", value=f"{prize}")
         announcement.add_field(name="Ends in", value=f"{duration} Hours")
         await channel.send(embed=announcement)
-        logs = client.get_channel(993366573718962256)
+        logs = client.get_channel(LOGS_CHANNEL)
         log = discord.Embed(title="Raffle set up")
         log.add_field(name=f"{interaction.user}", value="Set up raffle.", inline=False)
         log.add_field(name="prize: ", value=f"{prize}", inline=False)
@@ -543,16 +549,16 @@ async def raffle(
 
 
 @client.slash_command(
-    guild_ids=[943173196490879009, 943841709106819092],
+    guild_ids=[SERVER_ID, DEBUG_SERVER_ID],
     description="End the raffle",
 )
 @default_permissions(manage_messages=True)
 async def end_raffle(ctx, prize: discord.Option(str, description="Prize")):
     shop_items.remove(raffle_ticket)
-    guild = client.get_guild(int(943173196490879009))
-    ticketrole = guild.get_role(991763573737009172)
-    channel = client.get_channel(991779150723547227)
-    logs = client.get_channel(993366573718962256)
+    guild = client.get_guild(int(SERVER_ID))
+    ticketrole = guild.get_role(TICKET_ROLE)
+    channel = client.get_channel(RAFFLE_WINNER_CHANNEL)
+    logs = client.get_channel(LOGS_CHANNEL)
     log = discord.Embed(title="Raffle ended")
     log.add_field(name=f"{ctx.message.author}", value="Ended the raffle.", inline=False)
     log.add_field(name="prize: ", value=f"{prize}", inline=False)
@@ -581,10 +587,10 @@ async def end_raffle(ctx, prize: discord.Option(str, description="Prize")):
 async def raffle_timer(time, prize):
     if datetime.utcnow().strftime("%Y/%m/%d %H:%M:%S") == f"{time}":
         shop_items.remove(raffle_ticket)
-        guild = client.get_guild(int(943173196490879009))
-        ticketrole = guild.get_role(991763573737009172)
-        channel = client.get_channel(991779150723547227)
-        logs = client.get_channel(993366573718962256)
+        guild = client.get_guild(int(SERVER_ID))
+        ticketrole = guild.get_role(TICKET_ROLE)
+        channel = client.get_channel(RAFFLE_WINNER_CHANNEL)
+        logs = client.get_channel(LOGS_CHANNEL)
         log = discord.Embed(title="Raffle ended")
         log.add_field(name="prize: ", value=f"{prize}", inline=False)
         if len(ticketrole.members) < 1:
